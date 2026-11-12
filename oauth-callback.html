@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>認可コードの受け取り | 一括アップローダー</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .code-box { border: 2px solid #333; border-radius: 8px; padding: 16px; margin: 16px 0; word-break: break-all; font-size: 1.05rem; background: #f7f7f7; }
+  .copy-btn { display: inline-block; padding: 10px 20px; font-size: 1rem; border: 2px solid #333; border-radius: 8px; background: #fff; cursor: pointer; }
+  .note { color: #555; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>認可コードの受け取り</h1>
+  <div id="result"></div>
+</main>
+<footer>
+  <p><a href="privacy.html">プライバシーポリシー</a> ／ <a href="terms.html">利用規約</a></p>
+</footer>
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var code = params.get('code');
+  var error = params.get('error');
+  var box = document.getElementById('result');
+  if (error) {
+    box.innerHTML = '<p>認可が完了しませんでした（' + error + '）。</p>' +
+      '<p>一括アップローダーの画面に戻って、もう一度「YouTubeと接続」からやり直してください。</p>';
+    return;
+  }
+  if (!code) {
+    box.innerHTML = '<p>認可コードが見つかりませんでした。</p>' +
+      '<p>一括アップローダーの画面に戻って、もう一度「YouTubeと接続」からやり直してください。</p>';
+    return;
+  }
+  var fullUrl = window.location.href;
+  box.innerHTML =
+    '<p>下の認可コードをコピーして、一括アップローダーの「接続設定 → YouTube」にある「認可コードを貼り付け」の欄に貼ってください。</p>' +
+    '<div class="code-box" id="codeText"></div>' +
+    '<p><button class="copy-btn" id="copyCode" type="button">認可コードをコピー</button> ' +
+    '<button class="copy-btn" id="copyUrl" type="button">このページのURLをコピー</button></p>' +
+    '<p class="note">認可コードの有効時間は短い（およそ10分）ので、そのまま貼り付けに進んでください。このページを閉じても、貼り付けが終わっていれば問題ありません。</p>';
+  document.getElementById('codeText').textContent = code;
+  function copyText(text, btn) {
+    function done() { btn.textContent = 'コピーしました'; setTimeout(function () { btn.textContent = btn.id === 'copyCode' ? '認可コードをコピー' : 'このページのURLをコピー'; }, 2000); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { window.prompt('コピーできない場合は、この文字列をコピーしてください', text); });
+    } else {
+      window.prompt('この文字列をコピーしてください', text);
+    }
+  }
+  document.getElementById('copyCode').addEventListener('click', function () { copyText(code, this); });
+  document.getElementById('copyUrl').addEventListener('click', function () { copyText(fullUrl, this); });
+})();
+</script>
+</body>
+</html>
